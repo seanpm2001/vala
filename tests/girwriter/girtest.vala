@@ -96,6 +96,13 @@ namespace GirTest {
 		FISHY = 23
 	}
 
+	[CCode (has_type_id = false)]
+	public errordomain PlainErrorTest {
+		FAILED,
+		SMELLY,
+		FISHY = 23
+	}
+
 	[GIR (name = "RenamedError")]
 	public errordomain NamedError {
 		FAILED
