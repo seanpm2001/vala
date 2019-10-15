@@ -2165,6 +2165,7 @@ namespace GLib {
 
 	public delegate bool SourceFunc ();
 
+	[CCode (has_type_id = false)]
 	public errordomain ThreadError {
 		AGAIN;
 		public static GLib.Quark quark ();
@@ -2606,6 +2607,7 @@ namespace GLib {
 		AGAIN
 	}
 
+	[CCode (has_type_id = false)]
 	public errordomain IOChannelError {
 		FBIG,
 		INVAL,
@@ -2937,6 +2939,7 @@ namespace GLib {
 		public static string canonicalize (string filename, string? relative_to = null);
 	}
 
+	[CCode (has_type_id = false)]
 	public errordomain ConvertError {
 		NO_CONVERSION,
 		ILLEGAL_SEQUENCE,
@@ -3735,6 +3738,7 @@ namespace GLib {
 
 	/* Spawning Processes */
 
+	[CCode (has_type_id = false)]
 	public errordomain SpawnError {
 		FORK,
 		READ,
@@ -3856,6 +3860,7 @@ namespace GLib {
 
 	/* File Utilities */
 
+	[CCode (has_type_id = false)]
 	public errordomain FileError {
 		EXIST,
 		ISDIR,
@@ -4246,6 +4251,7 @@ namespace GLib {
 
 	/* Shell-related Utilities */
 
+	[CCode (has_type_id = false)]
 	public errordomain ShellError {
 		BAD_QUOTING,
 		EMPTY_STRING,
@@ -4261,6 +4267,7 @@ namespace GLib {
 
 	/* Commandline option parser */
 
+	[CCode (has_type_id = false)]
 	public errordomain OptionError {
 		UNKNOWN_OPTION,
 		BAD_VALUE,
@@ -4373,6 +4380,7 @@ namespace GLib {
 
 	/* Perl-compatible regular expressions */
 
+	[CCode (has_type_id = false)]
 	[Version (since = "2.14")]
 	public errordomain RegexError {
 		COMPILE,
@@ -4539,6 +4547,7 @@ namespace GLib {
 	/* Simple XML Subset Parser
 	   See http://live.gnome.org/Vala/MarkupSample for an example */
 
+	[CCode (has_type_id = false)]
 	public errordomain MarkupError {
 		BAD_UTF8,
 		EMPTY,
@@ -4626,6 +4635,7 @@ namespace GLib {
 
 	/* Key-value file parser */
 
+	[CCode (has_type_id = false)]
 	public errordomain KeyFileError {
 		UNKNOWN_ENCODING,
 		PARSE,
@@ -4822,6 +4832,7 @@ namespace GLib {
 		public bool move_item (string old_uri, string new_uri) throws BookmarkFileError;
 	}
 
+	[CCode (has_type_id = false)]
 	public errordomain BookmarkFileError {
 		INVALID_URI,
 		INVALID_VALUE,
@@ -6476,6 +6487,7 @@ namespace GLib {
 		public static void parse_error_print_context (GLib.VariantParseError error, string source_str);
 	}
 
+	[CCode (has_type_id = false)]
 	[Version (since = "2.24")]
 	public errordomain VariantParseError {
 		FAILED,
@@ -6568,6 +6580,7 @@ namespace GLib {
 			});
 	}
 
+	[CCode (has_type_id = false)]
 	[Version (since = "2.54")]
 	public errordomain NumberParserError {
 		INVALID,
