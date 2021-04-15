@@ -459,10 +459,13 @@ public class Vala.Parser : CodeVisitor {
 		while (accept (TokenType.OPEN_BRACKET)) {
 			do {
 				// required for decision between expression and declaration statement
-				if (current () != TokenType.COMMA && current () != TokenType.CLOSE_BRACKET) {
+				if (current () != TokenType.COMMA && current () != TokenType.CLOSE_BRACKET && current () != TokenType.COLON) {
 					parse_expression ();
 				}
 			} while (accept (TokenType.COMMA));
+			if (accept (TokenType.COLON)) {
+				skip_symbol_name ();
+			}
 			expect (TokenType.CLOSE_BRACKET);
 			accept (TokenType.INTERR);
 		}
@@ -549,18 +552,22 @@ public class Vala.Parser : CodeVisitor {
 		// array brackets in types are read from right to left,
 		// this is more logical, especially when nullable arrays
 		// or pointers are involved
+		DataType? array_length_type = null;
 		while (accept (TokenType.OPEN_BRACKET)) {
 			bool invalid_array = false;
 			int array_rank = 0;
 			do {
 				array_rank++;
 				// required for decision between expression and declaration statement
-				if (current () != TokenType.COMMA && current () != TokenType.CLOSE_BRACKET) {
+				if (current () != TokenType.COMMA && current () != TokenType.CLOSE_BRACKET && current () != TokenType.COLON) {
 					parse_expression ();
 					// only used for parsing, reject use as real type
 					invalid_array = true;
 				}
 			} while (accept (TokenType.COMMA));
+			if (accept (TokenType.COLON)) {
+				array_length_type = parse_type (true, false);
+			}
 			expect (TokenType.CLOSE_BRACKET);
 
 			type.value_owned = inner_type_owned;
@@ -568,6 +575,9 @@ public class Vala.Parser : CodeVisitor {
 			var array_type = new ArrayType (type, array_rank, get_src (begin));
 			array_type.nullable = accept (TokenType.INTERR);
 			array_type.invalid_syntax = invalid_array;
+			if (array_length_type != null) {
+				array_type.length_type = array_length_type.copy ();
+			}
 
 			type = array_type;
 		}
@@ -591,9 +601,13 @@ public class Vala.Parser : CodeVisitor {
 		// inline-allocated array
 		if (type != null && accept (TokenType.OPEN_BRACKET)) {
 			Expression array_length = null;
+			DataType? array_length_type = null;
 
 			if (current () != TokenType.CLOSE_BRACKET) {
 				array_length = parse_expression ();
+			}
+			if (accept (TokenType.COLON)) {
+				array_length_type = parse_type (true, false);
 			}
 			expect (TokenType.CLOSE_BRACKET);
 
@@ -602,6 +616,9 @@ public class Vala.Parser : CodeVisitor {
 			if (array_length != null) {
 				array_type.fixed_length = true;
 				array_type.length = array_length;
+			}
+			if (array_length_type != null) {
+				array_type.length_type = array_length_type;
 			}
 			array_type.value_owned = type.value_owned;
 
@@ -1033,6 +1050,7 @@ public class Vala.Parser : CodeVisitor {
 		bool size_specified = false;
 		List<Expression> size_specifier_list = null;
 		bool first = true;
+		DataType? array_length_type = null;
 		do {
 			if (!first) {
 				// array of arrays: new T[][42]
@@ -1042,6 +1060,9 @@ public class Vala.Parser : CodeVisitor {
 				}
 
 				element_type = new ArrayType (element_type, size_specifier_list.size, element_type.source_reference);
+				if (array_length_type != null) {
+					((ArrayType) element_type).length_type = array_length_type.copy ();
+				}
 			} else {
 				first = false;
 			}
@@ -1049,12 +1070,15 @@ public class Vala.Parser : CodeVisitor {
 			size_specifier_list = new ArrayList<Expression> ();
 			do {
 				Expression size = null;
-				if (current () != TokenType.CLOSE_BRACKET && current () != TokenType.COMMA) {
+				if (current () != TokenType.CLOSE_BRACKET && current () != TokenType.COMMA && current () != TokenType.COLON) {
 					size = parse_expression ();
 					size_specified = true;
 				}
 				size_specifier_list.add (size);
 			} while (accept (TokenType.COMMA));
+			if (accept (TokenType.COLON)) {
+				array_length_type = parse_type (true, false);
+			}
 			expect (TokenType.CLOSE_BRACKET);
 		} while (accept (TokenType.OPEN_BRACKET));
 
@@ -1065,6 +1089,9 @@ public class Vala.Parser : CodeVisitor {
 			initializer = parse_initializer ();
 		}
 		var expr = new ArrayCreationExpression (element_type, size_specifier_list.size, initializer, src);
+		if (array_length_type != null) {
+			expr.length_type = array_length_type.copy ();
+		}
 		if (size_specified) {
 			foreach (Expression size in size_specifier_list) {
 				expr.append_size (size);
