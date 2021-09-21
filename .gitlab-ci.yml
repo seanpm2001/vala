@@ -94,7 +94,7 @@ archlinux-gcc-x86_64:
 
 alpinelinux-gcc-x86_64:
   stage: build
-  image: alpine:edge
+  image: alpine:latest
   before_script:
     - apk -U upgrade
     - apk add automake autoconf-archive libtool bash bison gettext dbus-x11 flex git glib-dev graphviz-dev gobject-introspection-dev build-base libxslt-dev make vala
