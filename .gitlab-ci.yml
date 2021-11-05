@@ -4,7 +4,7 @@ stages:
 
 fedora-gcc-x86_64:
   stage: build
-  image: fedora:latest
+  image: fedora:34
   except:
     - tags
   before_script:
@@ -27,7 +27,7 @@ fedora-gcc-x86_64:
 
 fedora-clang-x86_64:
   stage: build
-  image: fedora:latest
+  image: fedora:34
   except:
     - tags
   variables:
